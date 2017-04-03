@@ -897,6 +897,51 @@ describe('manipulation', function() {
     });
   });
 
+  describe('updateOrCreate when forceId is true', function() {
+    var Post;
+    before(function(done) {
+      var ds = getSchema();
+      Post = ds.define('Post', {
+        title: {type: String, length: 255},
+        content: {type: String},
+      }, {forceId: true});
+      ds.automigrate('Post', done);
+    });
+
+    it('fails when id does not exist in db', function(done) {
+      var post = {id: 123, title: 'a', content: 'AAA'};
+      Post.updateOrCreate(post, function(err, p) {
+        err.statusCode.should.equal(404);
+        done();
+      });
+    });
+
+    it('works on create if the request does not include an id', function(done) {
+      var post = {title: 'a', content: 'AAA'};
+      Post.updateOrCreate(post, function(err, p) {
+        if (err) return done(err);
+        p.title.should.equal(post.title);
+        p.content.should.equal(post.content);
+        done();
+      });
+    });
+
+    it('works on update if the request includes an existing id in db', function(done) {
+      Post.create({title: 'a', content: 'AAA'},
+             function(err, post) {
+               if (err) return done(err);
+               post = post.toObject();
+               delete post.content;
+               post.title = 'b';
+               Post.updateOrCreate(post, function(err, p) {
+                 if (err) return done(err);
+                 p.id.should.equal(post.id);
+                 done();
+               });
+             });
+    });
+  });
+
   if (!getSchema().connector.replaceById) {
     describe.skip('replaceById - not implemented', function() {});
   } else {
