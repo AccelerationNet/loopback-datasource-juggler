@@ -748,11 +748,19 @@ describe('manipulation', function() {
       Post = db.define('Post', {
         title: {type: String, id: true},
         content: {type: String},
-      });
+      }, {forceId: true});
       Todo = db.define('Todo', {
         content: String,
-      });
-      db.automigrate(['Post', 'Todo'], done);
+      }, {forceId: true});
+      Person = db.define('Person', {
+        name: String,
+        gender: String,
+        married: Boolean,
+        age: {type: Number, index: true},
+        dob: Date,
+        createdAt: {type: Date, default: Date},
+      }, {forceId: false});
+      db.automigrate(['Post', 'Todo', 'Person'], done);
     });
 
     beforeEach(function deleteModelsInstances(done) {
@@ -910,7 +918,8 @@ describe('manipulation', function() {
 
     it('fails when id does not exist in db', function(done) {
       var post = {id: 123, title: 'a', content: 'AAA'};
-      Post.updateOrCreate(post, function(err, p) {
+      Post.updateOrCreate(post, function(err) {
+        console.log(err);
         err.statusCode.should.equal(404);
         done();
       });
