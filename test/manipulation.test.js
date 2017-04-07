@@ -921,7 +921,7 @@ describe('manipulation', function() {
 
     it('fails when id does not exist in db', function(done) {
       var post = {id: 123, title: 'a', content: 'AAA'};
-      Post.updateOrCreate(post, function(err) {
+      Post.updateOrCreate(post, (err) => {
         err.statusCode.should.equal(404);
         done();
       });
@@ -929,7 +929,7 @@ describe('manipulation', function() {
 
     it('works on create if the request does not include an id', function(done) {
       var post = {title: 'a', content: 'AAA'};
-      Post.updateOrCreate(post, function(err, p) {
+      Post.updateOrCreate(post, (err, p) => {
         if (err) return done(err);
         p.title.should.equal(post.title);
         p.content.should.equal(post.content);
@@ -938,8 +938,7 @@ describe('manipulation', function() {
     });
 
     it('works on update if the request includes an existing id in db', function(done) {
-      Post.create({title: 'a', content: 'AAA'},
-      function(err, post) {
+      Post.create({title: 'a', content: 'AAA'}, (err, post) => {
         if (err) return done(err);
         post = post.toObject();
         delete post.content;
@@ -947,6 +946,7 @@ describe('manipulation', function() {
         Post.updateOrCreate(post, function(err, p) {
           if (err) return done(err);
           p.id.should.equal(post.id);
+          p.title.should.equal('b');
           done();
         });
       });
