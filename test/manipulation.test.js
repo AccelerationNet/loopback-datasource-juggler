@@ -752,6 +752,9 @@ describe('manipulation', function() {
       Todo = db.define('Todo', {
         content: String,
       });
+      // Here `Person` model overrides the one outside 'updataOrCreate'
+      // with forceId: false. Related test cleanup see issue:
+      // https://github.com/strongloop/loopback-datasource-juggler/issues/1317
       Person = db.define('Person', {
         name: String,
         gender: String,
