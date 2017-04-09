@@ -920,7 +920,8 @@ describe('manipulation', function() {
     });
 
     it('fails when id does not exist in db', function(done) {
-      var post = {id: 123, title: 'a', content: 'AAA'};
+      var unknownId = uid.fromConnector(db) || 123;
+      var post = {id: unknownId, title: 'a', content: 'AAA'};
       Post.updateOrCreate(post, (err) => {
         err.statusCode.should.equal(404);
         done();
