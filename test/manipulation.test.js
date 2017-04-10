@@ -919,10 +919,19 @@ describe('manipulation', function() {
       ds.automigrate('Post', done);
     });
 
-    it('fails when id does not exist in db', function(done) {
+    it('fails when id does not exist in db & validate is true', function(done) {
       var unknownId = uid.fromConnector(db) || 123;
       var post = {id: unknownId, title: 'a', content: 'AAA'};
-      Post.updateOrCreate(post, (err) => {
+      Post.updateOrCreate(post, {validate: true}, (err) => {
+        err.statusCode.should.equal(404);
+        done();
+      });
+    });
+
+    it('fails when id does not exist in db & validate is false', function(done) {
+      var unknownId = uid.fromConnector(db) || 123;
+      var post = {id: unknownId, title: 'a', content: 'AAA'};
+      Post.updateOrCreate(post, {validate: false}, (err) => {
         err.statusCode.should.equal(404);
         done();
       });
